@@ -1,0 +1,197 @@
+<!-- <!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varona Image Classifier</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Varona Image Classifier</h1>
+
+        <div class="form-container">
+            <h2>Predict Image</h2>
+            <form id="predictForm">
+                <input type="file" id="imageFile" name="file" accept="image/*">
+                <button type="button" onclick="predictImage()">Predict</button>
+            </form>
+
+            <h2>Or Use Camera</h2>
+            <div id="camera-container">
+                <video id="video" autoplay></video>
+                <button type="button" onclick="captureImage()">Capture Image</button>
+            </div>
+            <canvas id="canvas" style="display: none;"></canvas>
+
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        async function predictImage() {
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            if (file) {
+                await processImage(file);
+            } else {
+                alert('Please select an image file or capture an image from the camera.');
+            }
+        }
+
+        async function processImage(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                document.getElementById('result').innerText = `Prediction: ${data.prediction}`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = `Failed to get prediction: ${error.message}`;
+            }
+        }
+
+        async function setupCamera() {
+            const video = document.getElementById('video');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+            }
+        }
+
+        function captureImage() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], 'captured_image.png', { type: 'image/png' });
+                await processImage(file);
+            }, 'image/png');
+        }
+
+        // Initialize the camera when the page loads
+        window.onload = setupCamera;
+    </script>
+</body>
+
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varona Image Detector</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Varona Image Detector</h1>
+        <div class="form-container">
+            <h2>Predict Image</h2>
+            <form id="predictForm">
+                <input type="file" id="imageFile" name="file" accept="image/*">
+                <button type="button" onclick="predictImage()">Predict</button>
+            </form>
+            <h2>Or Use Camera</h2>
+            <div id="camera-container">
+                <video id="video" autoplay></video>
+                <button type="button" onclick="captureImage()">Capture Image</button>
+            </div>
+            <canvas id="canvas" style="display: none;"></canvas>
+            <div id="result"></div>
+        </div>
+    </div>
+    <script>
+        async function predictImage() {
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            if (file) {
+                await processImage(file);
+            } else {
+                alert('Please select an image file or capture an image from the camera.');
+            }
+        }
+
+        async function processImage(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('http://localhost:8000/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                document.getElementById('result').innerText = `Prediction: ${data.prediction}`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = `Failed to get prediction: ${error.message}`;
+            }
+        }
+
+        async function setupCamera() {
+            const video = document.getElementById('video');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+            }
+        }
+
+        function captureImage() {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], 'captured_image.png', { type: 'image/png' });
+                await processImage(file);
+            }, 'image/png');
+        }
+
+        window.onload = setupCamera;
+    </script>
+</body>
+
+</html>

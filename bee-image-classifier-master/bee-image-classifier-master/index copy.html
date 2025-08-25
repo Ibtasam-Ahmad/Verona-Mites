@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bee Detection</title>
+    <style>
+        #result {
+            position: relative;
+        }
+
+        .box {
+            position: absolute;
+            border: 2px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Bee Detection</h1>
+    <input type="file" id="fileInput">
+    <button id="captureBtn">Capture Image</button>
+    <video id="video" width="320" height="240" autoplay></video>
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+    <button id="detectBtn">Detect Bees</button>
+    <div id="result"></div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const fileInput = document.getElementById('fileInput');
+        const detectBtn = document.getElementById('detectBtn');
+        const resultDiv = document.getElementById('result');
+
+        captureBtn.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/png');
+            sendImage(dataUrl);
+        });
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                sendImage(dataUrl);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        detectBtn.addEventListener('click', () => {
+            const dataUrl = canvas.toDataURL('image/png');
+            sendImage(dataUrl);
+        });
+
+        async function sendImage(dataUrl) {
+            const response = await fetch('http://localhost:8000/detect', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image: dataUrl })
+            });
+
+            const result = await response.json();
+            displayResult(result.boxes);
+        }
+
+        async function initCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        }
+
+        function displayResult(boxes) {
+            resultDiv.innerHTML = '';
+            const context = canvas.getContext('2d');
+            const dataUrl = canvas.toDataURL('image/png');
+            const img = new Image();
+            img.src = dataUrl;
+            img.onload = () => {
+                resultDiv.appendChild(img);
+                boxes.forEach(box => {
+                    const div = document.createElement('div');
+                    div.classList.add('box');
+                    div.style.left = `${box.x}px`;
+                    div.style.top = `${box.y}px`;
+                    div.style.width = `${box.width}px`;
+                    div.style.height = `${box.height}px`;
+                    resultDiv.appendChild(div);
+                });
+            };
+        }
+
+        initCamera();
+    </script>
+</body>
+
+</html>

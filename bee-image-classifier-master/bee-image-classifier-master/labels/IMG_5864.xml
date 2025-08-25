@@ -1,0 +1,25 @@
+<annotation>
+	<folder>my-project-name</folder>
+	<filename>IMG_5864.jpg</filename>
+	<path>/my-project-name/IMG_5864.jpg</path>
+	<source>
+		<database>Unspecified</database>
+	</source>
+	<size>
+		<width>6048</width>
+		<height>8064</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>Varroa</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>5577</xmin>
+			<ymin>246</ymin>
+			<xmax>5629</xmax>
+			<ymax>311</ymax>
+		</bndbox>
+	</object>
+</annotation>
